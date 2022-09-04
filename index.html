@@ -1,0 +1,22 @@
+<html>
+<body>
+<h1>Cross-Site URL Leakage with Download Handler</h1>
+<div id="result"></div>
+<script>
+if (typeof window.__firefox__.download == "undefined") {
+  Object.defineProperty(window.__firefox__, "download", {
+    enumerable: true,
+    configurable: true,
+    writable: false,
+    value: function(url, securityToken) {
+      document.getElementById('result').innerHTML += `<h3 style="color:red;">Victim opened in iframe:<u>${url}</u></h3>`;
+    }
+  });
+  document.body.innerHTML += '<b style="color:purple;">Injected malicious download handler</b><br>';
+} else {
+  document.body.innerHTML += '<b style="color:green;">Safe</b><br>';
+}
+</script>
+<br><br>
+<iframe src="http://info.cern.ch" style="width:100%; height:50%"></iframe>
+</html>
